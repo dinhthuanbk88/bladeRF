@@ -13,8 +13,8 @@ endif()
 
 set(SRC
     main.c
-    ../common/src/test_common.c
     ${BLADERF_HOST_COMMON_SOURCE_DIR}/conversions.c
+    ${BLADERF_HOST_COMMON_SOURCE_DIR}/devcfg.c
 )
 
 if(MSVC)

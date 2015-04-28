@@ -2,7 +2,7 @@
  * This file is part of the bladeRF project:
  *   http://www.github.com/nuand/bladeRF
  *
- * Copyright (C) 2014 Nuand LLC
+ * Copyright (C) 2014-2015 Nuand LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,26 +30,26 @@
 #include <errno.h>
 #include <getopt.h>
 
+#include "devcfg.h"
 #include "conversions.h"
-#include "test_common.h"
 
-#define TEST_DEFAULT_TX_FREQ    1000000000
-#define TEST_DEFAULT_TXVGA1     (-14)
-#define TEST_DEFAULT_TXVGA2     0
+#define DEVCFG_DFLT_TX_FREQ    1000000000
+#define DEVCFG_DFLT_TXVGA1     (-14)
+#define DEVCFG_DFLT_TXVGA2     0
 
-#define TEST_DEFAULT_RX_FREQ    1000000000
-#define TEST_DEFAULT_LNAGAIN    BLADERF_LNA_GAIN_MAX
-#define TEST_DEFAULT_RXVGA1     30
-#define TEST_DEFAULT_RXVGA2     3
+#define DEVCFG_DFLT_RX_FREQ    1000000000
+#define DEVCFG_DFLT_LNAGAIN    BLADERF_LNA_GAIN_MAX
+#define DEVCFG_DFLT_RXVGA1     30
+#define DEVCFG_DFLT_RXVGA2     0
 
-#define TEST_DEFAULT_SAMPLERATE 1500000
-#define TEST_DEFAULT_BANDWIDTH  TEST_DEFAULT_SAMPLERATE
+#define DEVCFG_DFLT_SAMPLERATE 2000000
+#define DEVCFG_DFLT_BANDWIDTH  1500000
 
-#define TEST_DEFAULT_SAMPLES_PER_BUF    4096
-#define TEST_DEFAULT_NUM_BUFFERS        64
-#define TEST_DEFAULT_NUM_TRANSFERS      16
-#define TEST_DEFAULT_STREAM_TIMEMOUT_MS 5000
-#define TEST_DEFAULT_SYNC_TIMEOUT_MS    (2 * TEST_DEFAULT_STREAM_TIMEMOUT_MS)
+#define DEVCFG_DFLT_SAMPLES_PER_BUF    8192
+#define DEVCFG_DFLT_NUM_BUFFERS        64
+#define DEVCFG_DFLT_NUM_TRANSFERS      16
+#define DEVCFG_DFLT_STREAM_TIMEMOUT_MS 5000
+#define DEVCFG_DFLT_SYNC_TIMEOUT_MS    (2 * DEVCFG_DFLT_STREAM_TIMEMOUT_MS)
 
 #define OPTION_HELP             'h'
 #define OPTION_DEVICE           'd'
@@ -76,7 +76,6 @@
 #define OPTION_SYNC_TIMEOUT     0x95
 #define OPTION_ENABLE_XB200     0x96
 
-
 static const numeric_suffix hz_suffixes[] = {
     { "K",   1000 },
     { "KHz", 1000 },
@@ -86,7 +85,7 @@ static const numeric_suffix hz_suffixes[] = {
     { "GHz", 1000000000 },
 };
 
-static const struct option test_long_options[] =
+static const struct option devcfg_long_options[] =
 {
     { "help",                 no_argument,        0,  OPTION_HELP },
     { "device",               required_argument,  0,  OPTION_DEVICE },
@@ -122,22 +121,22 @@ static const struct option test_long_options[] =
     { "sync-timeout",         required_argument,  0,  OPTION_SYNC_TIMEOUT },
 };
 
-void test_init_device_config(struct device_config *c)
+void devcfg_init(struct devcfg *c)
 {
     c->device_specifier = NULL;
 
-    c->tx_frequency     = TEST_DEFAULT_TX_FREQ;
-    c->tx_bandwidth     = TEST_DEFAULT_BANDWIDTH;
-    c->tx_samplerate    = TEST_DEFAULT_SAMPLERATE;
-    c->txvga1           = TEST_DEFAULT_TXVGA1;
-    c->txvga2           = TEST_DEFAULT_TXVGA2;
+    c->tx_frequency     = DEVCFG_DFLT_TX_FREQ;
+    c->tx_bandwidth     = DEVCFG_DFLT_BANDWIDTH;
+    c->tx_samplerate    = DEVCFG_DFLT_SAMPLERATE;
+    c->txvga1           = DEVCFG_DFLT_TXVGA1;
+    c->txvga2           = DEVCFG_DFLT_TXVGA2;
 
-    c->rx_frequency     = TEST_DEFAULT_TX_FREQ;
-    c->rx_bandwidth     = TEST_DEFAULT_BANDWIDTH;
-    c->rx_samplerate    = TEST_DEFAULT_SAMPLERATE;
-    c->lnagain          = TEST_DEFAULT_LNAGAIN;
-    c->rxvga1           = TEST_DEFAULT_RXVGA1;
-    c->rxvga2           = TEST_DEFAULT_RXVGA2;
+    c->rx_frequency     = DEVCFG_DFLT_TX_FREQ;
+    c->rx_bandwidth     = DEVCFG_DFLT_BANDWIDTH;
+    c->rx_samplerate    = DEVCFG_DFLT_SAMPLERATE;
+    c->lnagain          = DEVCFG_DFLT_LNAGAIN;
+    c->rxvga1           = DEVCFG_DFLT_RXVGA1;
+    c->rxvga2           = DEVCFG_DFLT_RXVGA2;
 
     c->loopback = BLADERF_LB_NONE;
 
@@ -145,21 +144,24 @@ void test_init_device_config(struct device_config *c)
 
     c->enable_xb200 = false;
 
-    c->samples_per_buffer = TEST_DEFAULT_SAMPLES_PER_BUF;
-    c->num_buffers = TEST_DEFAULT_NUM_BUFFERS;
-    c->num_transfers = TEST_DEFAULT_NUM_TRANSFERS;
-    c->stream_timeout_ms = TEST_DEFAULT_STREAM_TIMEMOUT_MS;
-    c->sync_timeout_ms = TEST_DEFAULT_SYNC_TIMEOUT_MS;
+    c->samples_per_buffer   = DEVCFG_DFLT_SAMPLES_PER_BUF;
+    c->num_buffers          = DEVCFG_DFLT_NUM_BUFFERS;
+    c->num_transfers        = DEVCFG_DFLT_NUM_TRANSFERS;
+    c->stream_timeout_ms    = DEVCFG_DFLT_STREAM_TIMEMOUT_MS;
+    c->sync_timeout_ms      = DEVCFG_DFLT_SYNC_TIMEOUT_MS;
 }
 
-void test_deinit_device_config(struct device_config *c)
+void devcfg_deinit(struct devcfg *c)
 {
     free(c->device_specifier);
 }
 
-void test_print_common_help()
+void devcfg_print_common_help(const char *title)
 {
-    printf("Common libbladeRF test options:\n");
+    if (title != NULL) {
+        printf("%s", title);
+    }
+
     printf("  -h, --help                Show this help text.\n");
     printf("  -d, --device <str>        Open the specified device.\n");
     printf("  -v, --verbosity <level>   Set the libbladeRF verbosity level.\n");
@@ -178,12 +180,12 @@ void test_print_common_help()
     printf("  --rx-bandwidth <bw>       Set RX to the specified bandwidth.\n");
     printf("  --tx-bandwidth <bw>       Set TX to the specified bandwidth.\n");
     printf("\n");
-    printf("  --gain-lna <gain>         Set the RX LNA to the specified gain.\n");
+    printf("  --lna-gain <gain>         Set the RX LNA to the specified gain.\n");
     printf("                                Options are: bypass, mid, max\n");
-    printf("  --gain-rxvga1 <gain>      Set RX VGA1 to the specified gain.\n");
-    printf("  --gain-rxvga2 <gain>      Set RX VGA2 to the specified gain.\n");
-    printf("  --gain-txvga1 <gain>      Set TX VGA1 to the specified gain.\n");
-    printf("  --gain-txvga2 <gain>      Set TX VGA2 to the specified gain.\n");
+    printf("  --rxvga1-gain <gain>      Set RX VGA1 to the specified gain.\n");
+    printf("  --rxvga2-gain <gain>      Set RX VGA2 to the specified gain.\n");
+    printf("  --txvga1-gain <gain>      Set TX VGA1 to the specified gain.\n");
+    printf("  --txvga2-gain <gain>      Set TX VGA2 to the specified gain.\n");
     printf("\n");
     printf("  --num-buffers <n>         Allocate <n> sample buffers.\n");
     printf("  --samples-per-buffer <n>  Allocate <n> samples in each sample buffer.\n");
@@ -193,11 +195,11 @@ void test_print_common_help()
 
 }
 
-struct option * test_get_long_options(const struct option *app_options)
+struct option * devcfg_get_long_options(const struct option *app_options)
 {
     struct option *ret;
     size_t app_size = 0;
-    const size_t test_size = sizeof(test_long_options);
+    const size_t devcfg_size = sizeof(devcfg_long_options);
 
     while (app_options[app_size].name != NULL) {
         app_size++;
@@ -206,19 +208,18 @@ struct option * test_get_long_options(const struct option *app_options)
     /* Account for 0-entry */
     app_size = (app_size + 1) * sizeof(app_options[0]);
 
-    ret = malloc(test_size + app_size);
+    ret = malloc(devcfg_size + app_size);
 
     if (ret != NULL) {
-        memcpy(ret, &test_long_options, test_size);
-        memcpy(ret + ARRAY_SIZE(test_long_options) , app_options, app_size);
+        memcpy(ret, &devcfg_long_options, devcfg_size);
+        memcpy(ret + ARRAY_SIZE(devcfg_long_options) , app_options, app_size);
     }
 
     return ret;
 }
 
-int test_handle_args(int argc, char **argv,
-                     const char *option_str, const struct option *long_options,
-                     struct device_config *config)
+int devcfg_handle_args(int argc, char **argv, const char *option_str,
+                       const struct option *long_options, struct devcfg *config)
 {
     int c;
     bool ok;
@@ -404,10 +405,10 @@ int test_handle_args(int argc, char **argv,
                 break;
 
             case OPTION_RXVGA1:
-                config->rxvga1 = str2uint(optarg,
-                                          BLADERF_RXVGA1_GAIN_MIN,
-                                          BLADERF_RXVGA1_GAIN_MAX,
-                                          &ok);
+                config->rxvga1 = str2int(optarg,
+                                         BLADERF_RXVGA1_GAIN_MIN,
+                                         BLADERF_RXVGA1_GAIN_MAX,
+                                         &ok);
 
                 if (!ok) {
                     fprintf(stderr, "Invalid RXVGA1 gain: %s\n", optarg);
@@ -416,10 +417,10 @@ int test_handle_args(int argc, char **argv,
                 break;
 
             case OPTION_RXVGA2:
-                config->rxvga2 = str2uint(optarg,
-                                          BLADERF_RXVGA2_GAIN_MIN,
-                                          BLADERF_RXVGA2_GAIN_MAX,
-                                          &ok);
+                config->rxvga2 = str2int(optarg,
+                                         BLADERF_RXVGA2_GAIN_MIN,
+                                         BLADERF_RXVGA2_GAIN_MAX,
+                                         &ok);
 
                 if (!ok) {
                     fprintf(stderr, "Invalid RXVGA1 gain: %s\n", optarg);
@@ -428,10 +429,10 @@ int test_handle_args(int argc, char **argv,
                 break;
 
             case OPTION_TXVGA1:
-                config->txvga1 = str2uint(optarg,
-                                          BLADERF_TXVGA1_GAIN_MIN,
-                                          BLADERF_TXVGA1_GAIN_MAX,
-                                          &ok);
+                config->txvga1 = str2int(optarg,
+                                         BLADERF_TXVGA1_GAIN_MIN,
+                                         BLADERF_TXVGA1_GAIN_MAX,
+                                         &ok);
 
                 if (!ok) {
                     fprintf(stderr, "Invalid TXVGA1 gain: %s\n", optarg);
@@ -440,10 +441,10 @@ int test_handle_args(int argc, char **argv,
                 break;
 
             case OPTION_TXVGA2:
-                config->txvga2 = str2uint(optarg,
-                                          BLADERF_TXVGA2_GAIN_MIN,
-                                          BLADERF_TXVGA2_GAIN_MAX,
-                                          &ok);
+                config->txvga2 = str2int(optarg,
+                                         BLADERF_TXVGA2_GAIN_MIN,
+                                         BLADERF_TXVGA2_GAIN_MAX,
+                                         &ok);
 
                 if (!ok) {
                     fprintf(stderr, "Invalid TXVGA2 gain: %s\n", optarg);
@@ -499,7 +500,7 @@ int test_handle_args(int argc, char **argv,
     return 0;
 }
 
-int test_apply_device_config(struct bladerf *dev, struct device_config *c)
+int devcfg_apply(struct bladerf *dev, const struct devcfg *c)
 {
     int status;
 
@@ -600,9 +601,9 @@ int test_apply_device_config(struct bladerf *dev, struct device_config *c)
     return 0;
 }
 
-int test_perform_sync_config(struct bladerf *dev, bladerf_module module,
-                             bladerf_format format,
-                             struct device_config *config, bool enable_module)
+int devcfg_perform_sync_config(struct bladerf *dev, bladerf_module module,
+                               bladerf_format format, struct devcfg *config,
+                               bool enable_module)
 {
     int status = bladerf_sync_config(dev, module, format,
                                      config->num_buffers,
