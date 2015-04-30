@@ -64,7 +64,7 @@ int16_t * init(struct bladerf *dev, int16_t num_samples)
     const unsigned int num_buffers = 16;
     const unsigned int buffer_size = 8192;
     const unsigned int num_transfers = 8;
-    const unsigned int timeout_ms  = 5000;
+    const unsigned int timeout_ms  = 1000;
 
     samples = malloc(num_samples * 2 * sizeof(int16_t));
     if (samples == NULL) {
@@ -115,6 +115,8 @@ error:
 /** [rx_meta_deinit] */
 void deinit(struct bladerf *dev, int16_t *samples)
 {
+    printf("\nDeinitalizing device.\n");
+
     /* Disable RX module, shutting down our underlying RX stream */
     int status = bladerf_enable_module(dev, BLADERF_MODULE_RX, false);
     if (status != 0) {
@@ -235,6 +237,12 @@ int main(int argc, char *argv[])
     int status = -1;
     struct bladerf *dev = NULL;
     const char *devstr = NULL;
+    int16_t *samples = NULL;
+
+    const unsigned int num_samples = 4096;
+    const unsigned int rx_count = 15;
+    const unsigned int timeout_ms = 2500;
+
 
     if (argc == 2) {
         if (!strcasecmp("-h", argv[1]) || !strcasecmp("--help", argv[1])) {
@@ -250,22 +258,21 @@ int main(int argc, char *argv[])
 
     dev = example_init(devstr);
     if (dev) {
-        int16_t *samples = NULL;
-        const unsigned int num_samples = 4096;
-
         samples = init(dev, num_samples);
         if (samples != NULL) {
             printf("\nRunning RX meta \"now\" example...\n");
-            status = sync_rx_meta_now_example(dev, samples, num_samples,
-                                              15, 2500);
+            status = sync_rx_meta_now_example(dev,
+                                              samples, num_samples,
+                                              rx_count,
+                                              timeout_ms);
 
             if (status == 0) {
                 printf("\nRunning RX meta \"scheduled\" example...\n");
-                status = sync_rx_meta_sched_example(dev, samples, num_samples,
-                                                    15, EXAMPLE_SAMPLERATE,
-                                                    2500);
-
-
+                status = sync_rx_meta_sched_example(dev,
+                                                    samples, num_samples,
+                                                    rx_count,
+                                                    EXAMPLE_SAMPLERATE,
+                                                    timeout_ms);
             }
         }
 
