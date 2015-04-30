@@ -225,6 +225,7 @@ int sync_rx_meta_sched_example(struct bladerf *dev,
 
     return status;
 }
+
 /** [rx_meta_sched_example] */
 
 static void usage(const char *argv0)
