@@ -1,0 +1,39 @@
+/**
+@page boilerplate Device Configuration Boilerplate
+
+This page presents boilerplate code for configuring a bladeRF device via the
+libbladeRF API.
+
+<h2>Acquiring a device handle</h2>
+
+First, one must acquire a handle to a bladeRF device. Four common approaches to this are:
+<ul>
+<li>Open the first available device.</li>
+<li>Open a device with a specified serial number.</li>
+<li>Open a device with the specified USB bus and address values.</li>
+<li>Choose a device from a list of all available devices.</li>
+</ul>
+
+The first three approaches can be implemented via a call to bladerf_open() or
+bladerf_open_with_devinfo().  Both of these functions offer the same functionality,
+but through a slightly different interface.  
+
+bladerf_open() takes a specially formatted "device identifier" string as an
+argument. This provides a simple means to give the user full control over how
+the desired device is specified, perhaps through a command-line argument or GUI
+text field.
+
+bladerf_open_with_devinfo() uses a ::bladerf_devinfo structure to identify the
+device to open. This is generally a better choice when programatically deciding
+which device to open, as it alleviates the need to craft a device identifier
+string. This approach is taken in the example code contained on this page.
+
+The last approach listed above is a good choice for programs that need to
+present a list of available devices to a user. A list of connected bladeRF
+devices may be retrieved via bladerf_get_device_list(). The contents of
+each ::bladerf_devinfo could then be presented to a user for selection,
+and the desired device's ::bladerf_devinfo can then be passed to
+bladerf_open_with_devinfo(). The device list can then be freed using
+bladerf_free_device_list().
+
+*/
