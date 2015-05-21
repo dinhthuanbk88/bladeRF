@@ -91,31 +91,30 @@ TODO: Create boilerplate examples
     <a class="el" href="boilerplate.html">Device configuration boilerplate</a>
     </li>
     <li>
-    Synchronous sample streaming interface
-        <ul>
-            <li>
-            RX without metadata 
-            </li>
-            <li>
-            RX with metadata: Receiving samples along with a timestamp
-            </li>
-            <li>
-            RX with metadata: Receiving samples at specific time offset
-            </li>
-            <li>
-            TX without metadata
-            </li>
-            <li>
-            TX with metadata: Transmitting bursts of samples
-            </li>
-            <li>
-            TX with metadata: Using the UPDATE_TIMESTAMP flag
-            </li>
-            <li>
-            TX with metadata: Transmitting using the TX_NOW flag
-            </li>
-        </ul>
+    RX and TX via the Synchrnous Interface
     </li>
+    <ul>
+        <li>
+        <a class="el" href="sync_no_meta.html">Basic usage without metadata</a>
+        </li>
+        <li>
+        RX with metadata: Receiving samples along with a timestamp
+        </li>
+        <li>
+        RX with metadata: Receiving samples at specific time offset
+        </li>
+        <li>
+        TX without metadata
+        </li>
+        <li>
+        TX with metadata: Transmitting bursts of samples
+        </li>
+        <li>
+        TX with metadata: Using the UPDATE_TIMESTAMP flag
+        </li>
+        <li>
+        TX with metadata: Transmitting using the TX_NOW flag
+    </ul>
     <li>
     General advice and debugging tips
     </li>

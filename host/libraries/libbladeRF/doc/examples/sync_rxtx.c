@@ -48,6 +48,7 @@ bool do_work(int16_t *rx, unsigned int rx_len,
 /** [example_snippet] */
 int sync_rx_example(struct bladerf *dev)
 {
+    /** [declarations] */
     int status, ret;
     bool done = false;
 
@@ -59,11 +60,11 @@ int sync_rx_example(struct bladerf *dev)
 
     /* These items configure the underlying asynch stream used by the sync
      * interface. The "buffer" here refers to those used internally by worker
-     * threads, not the `samples` buffer above. */
-    const unsigned int num_buffers = 16;
-    const unsigned int buffer_size = 8192;  /* Must be a multiple of 1024 */
+     * threads, not the user's `samples` buffers above. */
+    const unsigned int num_buffers   = 16;
+    const unsigned int buffer_size   = 8192;  /* Must be a multiple of 1024 */
     const unsigned int num_transfers = 8;
-    const unsigned int timeout_ms  = 3500;
+    const unsigned int timeout_ms    = 3500;
 
 
     /* Allocate a buffer to store received samples in */
@@ -80,16 +81,17 @@ int sync_rx_example(struct bladerf *dev)
         free(rx_samples);
         return BLADERF_ERR_MEM;
     }
+    /** [declarations] */
 
     /* Configure both the device's RX and TX modules for use with the synchronous
      * interface. SC16 Q11 samples *without* metadata are used. */
     status = bladerf_sync_config(dev,
-            BLADERF_MODULE_RX,
-            BLADERF_FORMAT_SC16_Q11,
-            num_buffers,
-            buffer_size,
-            num_transfers,
-            timeout_ms);
+                                 BLADERF_MODULE_RX,
+                                 BLADERF_FORMAT_SC16_Q11,
+                                 num_buffers,
+                                 buffer_size,
+                                 num_transfers,
+                                 timeout_ms);
 
     if (status != 0) {
         fprintf(stderr, "Failed to configure RX sync interface: %s\n",

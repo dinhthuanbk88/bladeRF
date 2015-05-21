@@ -1,0 +1,36 @@
+/**
+
+\page sync_no_meta bladeRF Synchronous Interface: Basic Usage
+
+This page describes how to use the bladeRF <a class="el"
+href="group___f_n___d_a_t_a___s_y_n_c.html"<a>Synchronous Interface</a> to 
+transmit and receive samples. The example listed here configures and
+uses both the RX and TX modules. To use just one or the other, simply remove
+the code for the unneeded module.
+
+<h2>Initialization and Configuration</h2>
+
+First, one must allocate any "working buffers" and decide upon the parameters
+required for the underlying data stream.
+
+In the below snippet we allocate two "user" buffers: one to store received
+samples in, and another to store samples to transmit.
+
+libbladeRF's synchronous interface maintains its own set of internal buffers,
+which it uses to keep an asynchronous data stream running. This alleviates the
+need for the use of this interface to handling asynchronous callbacks and
+managing buffer transfers. Instead, the synchronous interface simply copies data
+to/from the aforementioned "user" buffers, for arbitrary request lengths.
+
+It is important to note, however, that users of the synchronous interface
+should still be conscious of the workings of the underlying <a class="el"
+href="group___f_n___d_a_t_a___a_s_y_n_c.html">Asynchronous Interface</a>.
+
+The `buffer_size` parameter configures the size 
+
+\snippet sync_rxtx.c declarations
+
+<h2>Complete listing</h2>
+\snippet sync_rxtx.c example_snippet
+
+*/
