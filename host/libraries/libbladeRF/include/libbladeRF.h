@@ -194,7 +194,7 @@ int CALL_CONV bladerf_open_with_devinfo(struct bladerf **device,
  * available.
  *
  * The general form of the device identifier string is;
- * @code
+ * @code{.txt}
  *      <backend>:[device=<bus>:<addr>] [instance=<n>] [serial=<serial>]
  * @endcode
  *
@@ -225,6 +225,19 @@ int CALL_CONV bladerf_open_with_devinfo(struct bladerf **device,
  *      - Nth instance encountered, 0-indexed
  *   - serial=\<serial\>
  *      - Device's serial number.
+ *
+ * Below is an example of how to open a device with a specific serial
+ * number, using any avaiable backend supported by libbladeRF:
+ *
+ * @code {.c}
+ * struct bladerf *dev;
+ * int status = bladerf_open(&dev, "*:serial=f12ce1037830a1b27f3ceeba1f521413");
+ * if (status != 0) {
+ *      fprintf(stderr, "Unable to open device: %s\n",
+ *              bladerf_strerror(status));
+ *      return status;
+ * }
+ * @endcode
  *
  * @param[out]  device             Update with device handle on success
  * @param[in]   device_identifier  Device identifier, formatted as described
